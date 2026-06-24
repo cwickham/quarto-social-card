@@ -11,14 +11,14 @@ color:
 
 typography:
   fonts:
-    - family: Libre Baskerville
-      source: bunny
-    - family: Inter
-      source: bunny
+    - family: Fraunces
+      source: google
+    - family: Atkinson Hyperlegible
+      source: google
   base:
-    family: Inter
+    family: Atkinson Hyperlegible # designed for legibility
   headings:
-    family: Libre Baskerville
+    family: Fraunces # soft serif with some personality
   monospace-inline:
     background-color:
       light: "#f1f1f4"

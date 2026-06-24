@@ -6,7 +6,7 @@ A Quarto Typst format that renders an Open Graph social card (1200×630 PNG) fro
 a document's metadata — title, subtitle, image — styled with your project's
 `_brand.yml` colors and fonts.
 
-![The extension's own social card: "quarto-social-card / Social cards from your Quarto metadata", with an example card alongside](thumbnail.png)
+![The extension's own social card](thumbnail.png){fig-alt="'quarto-social-card / Social cards from your Quarto metadata', with an example card alongside"}
 
 ## Usage
 
