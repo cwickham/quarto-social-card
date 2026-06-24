@@ -121,7 +121,7 @@ $endif$
         // plus a small extra v()
         set par(spacing: 0pt)
         text(.._font(heading-font), size: title-size, weight: "bold", fill: fg, card-title)
-        v(subtitle-size * 0.4)
+        v(subtitle-size * 0.8)
         box(width: text-width, text(.._font(base-font), size: subtitle-size, weight: "medium", fill: accent, card-subtitle))
       },
       // right: image, centred in its column
