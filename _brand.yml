@@ -6,7 +6,7 @@ color:
     light: "#ffffff"
     dark: "#1a1a2e"
   primary:
-    light: "#166534" # forest green, 7.13:1 on white (WCAG AA)
+    light: "#355044" # dark shade of the foggy mint, 8.85:1 on white (WCAG AA)
     dark: "#94b8a8"  # foggy mint, 7.86:1 on the navy (WCAG AA)
 
 typography:
