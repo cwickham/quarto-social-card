@@ -4,3 +4,13 @@
 // for the navbar foreground so the title and links stay legible (navy on the
 // minty primary is ~11:1).
 $navbar-fg: #1a1a2e;
+
+// the default note-callout color reads poorly on the dark background; use a
+// light blue (9.54:1 on the navy)
+$callout-color-note: #8ecae6;
+
+/*-- scss:defaults --*/
+
+h2 {
+  border: none;
+}
