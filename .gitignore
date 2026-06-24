@@ -1,0 +1,5 @@
+.DS_Store
+.quarto/
+_site/
+# transient render artifacts from _tests/render.sh
+.case-*.typ

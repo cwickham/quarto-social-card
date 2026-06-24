@@ -1,0 +1,16 @@
+project:
+  type: website
+
+website:
+  title: "My Website"
+  search: false
+  open-graph: true # https://quarto.org/docs/websites/website-tools.html#open-graph
+  page-footer: "Made with ❤️ and Quarto"
+  navbar:
+    right:
+      - text: Home
+        href: index.qmd
+    tools: 
+      - icon: github
+        text: Github
+        href: https://github.com
