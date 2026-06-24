@@ -1,15 +1,29 @@
 color:
-  foreground: "#f5f5f5"
-  background: "#1a1a2e"
-  primary: "#ec4899" # dark pink; 4.84:1 on the navy background (WCAG AA)
+  foreground:
+    light: "#1a1a2e"
+    dark: "#f5f5f5"
+  background:
+    light: "#ffffff"
+    dark: "#1a1a2e"
+  primary:
+    light: "#c2185b" # dark pink, 5.87:1 on white (WCAG AA)
+    dark: "#ec4899"  # dark pink, 4.84:1 on the navy (WCAG AA)
 
 typography:
   fonts:
-    - family: Baskerville
-      source: system
-    - family: Avenir Next
-      source: system
+    - family: Libre Baskerville
+      source: bunny
+    - family: Inter
+      source: bunny
   base:
-    family: Avenir Next
+    family: Inter
   headings:
-    family: Baskerville
+    family: Libre Baskerville
+  monospace-inline:
+    background-color:
+      light: "#f1f1f4"
+      dark: "#2a2a40"
+  monospace-block:
+    background-color:
+      light: "#f1f1f4"
+      dark: "#2a2a40"

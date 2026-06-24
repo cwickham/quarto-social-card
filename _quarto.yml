@@ -15,3 +15,7 @@ website:
         href: https://github.com/cwickham/quarto-social-card
         aria-label: GitHub
   page-footer: "Made with Quarto and quarto-social-card"
+
+format:
+  html:
+    syntax-highlighting: a11y # light/dark accessible code highlighting

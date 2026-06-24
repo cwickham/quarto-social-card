@@ -2,6 +2,7 @@
 title: "cwickham/quarto-social-card"
 subtitle: "Social cards from your Quarto metadata"
 image: _examples/thumbnail.png
+brand-mode: dark # render the card in the brand's dark variant
 format:
   social-card-typst: default
 ---
