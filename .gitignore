@@ -2,7 +2,10 @@
 .quarto/
 _site/
 # transient render artifacts from _tests/render.sh
-.case-*.typ
+_card.qmd
+_card.typ
+_card.pdf
+_tests/.brand-backup.yml
 # build artifacts from the _thumbnail.qmd spike
 _thumbnail.typ
 _thumbnail.pdf

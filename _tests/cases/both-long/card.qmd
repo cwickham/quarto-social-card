@@ -1,0 +1,7 @@
+---
+title: "Alicia Featherstone-Worthington"
+subtitle: "Principal Data Scientist & Machine Learning Engineering Lead"
+image: profile.jpg
+format:
+  social-card-typst: default
+---

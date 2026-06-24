@@ -1,0 +1,15 @@
+color:
+  foreground: "#333333"
+  background: "#ffffff"
+  primary: "#2A9D8F"
+
+typography:
+  fonts:
+    - family: Pacifico
+      source: google
+    - family: Roboto
+      source: google
+  base:
+    family: Roboto
+  headings:
+    family: Pacifico
