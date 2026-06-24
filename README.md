@@ -92,6 +92,19 @@ format:
 ---
 ```
 
+### Use a brand's dark mode
+
+If your `_brand.yml` defines light and dark variants, the card uses the **light**
+mode by default — a card is a static image, so it has no automatic dark mode. Set
+`brand-mode: dark` in the card's front matter to render the dark variant:
+
+```yaml
+title: "Alicia"
+brand-mode: dark
+format:
+  social-card-typst: default
+```
+
 ### Add a card to an existing page
 
 Instead of a dedicated `_thumbnail.qmd`, you can add the format to any page
