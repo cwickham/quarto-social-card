@@ -5,6 +5,7 @@ website:
   title: "My Website"
   search: false
   open-graph: true # https://quarto.org/docs/websites/website-tools.html#open-graph
+  image: thumbnail.png # social card generated from _thumbnail.qmd (see its body)
   page-footer: "Made with ❤️ and Quarto"
   navbar:
     right:

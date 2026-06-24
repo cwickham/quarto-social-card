@@ -89,12 +89,39 @@ Individual pages can still override this with their own `image:` front matter.
 Re-run the two commands in step 2 whenever the title, subtitle, image, or brand
 changes.
 
-## Tests
+### Using it on an existing page
 
-`_tests/render.sh` regenerates golden cards for a set of cases (default, long
-title, long subtitle, both long) into `_tests/expected/`. The case definitions
-in that script are the test parameters.
+Instead of a dedicated `_thumbnail.qmd`, you can add the format to any page
+alongside its normal output:
+
+```yaml
+format:
+  html: default
+  social-card-typst: default
+```
+
+`quarto render page.qmd` then produces both the HTML page and the card
+(`page.typ` → `page.pdf`); rasterize `page.typ` to PNG just as in step 2. The
+card uses that page's `title` / `subtitle` / `image`, and the page **body is
+ignored** — only the metadata reaches the card.
+
+Two caveats: in a website project the card `page.pdf` is written into `_site/`
+alongside the HTML (a stray file you may want to clean up), and you rasterize
+each page individually.
+
+## Development
+
+### Tests
+
+`_tests/render.sh` renders each case under `_tests/cases/` through the format and
+rasterizes it to a golden PNG in `_tests/expected/`. Each case is a directory
+holding a `card.qmd` plus an optional `_brand.yml` (or a `.no-brand` marker; with
+neither, the project's own `_brand.yml` is used). Cases cover the default, long
+title, long subtitle, both long, missing title / subtitle / image, no brand, and
+a brand with downloaded (Google) fonts.
 
 ```bash
 ./_tests/render.sh
 ```
+
+(The downloaded-fonts case needs network access on first run.)
