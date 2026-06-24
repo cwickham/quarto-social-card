@@ -20,6 +20,11 @@ $if(image)$
 $else$
 #let card-image = none
 $endif$
+$if(image-shape)$
+#let image-shape = "$image-shape$"
+$else$
+#let image-shape = "rectangle"
+$endif$
 $if(brand.typography.base.family)$
 #let base-font = $brand.typography.base.family$
 $else$
@@ -79,10 +84,18 @@ $endif$
 #set page(width: card-width, height: card-height, margin: 0pt, fill: bg)
 #set text(fill: fg)
 
-#let avatar(path, size) = box(
-  width: size, height: size, radius: 50%, clip: true,
-  image(path, width: size, height: size, fit: "cover"),
-)
+// `shape` mirrors Quarto's `about` template: round (circle), rounded (rounded
+// corners), rectangle (square corners). `round` crops the image to a square;
+// the others show the whole image at its natural aspect ratio, fit to `size`.
+#let avatar(path, size, shape) = {
+  if shape == "rectangle" or shape == "rounded" {
+    let radius = if shape == "rounded" { 0.4cm } else { 0pt }
+    box(radius: radius, clip: true, image(path, width: size))
+  } else {
+    box(width: size, height: size, radius: 50%, clip: true,
+      image(path, width: size, height: size, fit: "cover"))
+  }
+}
 
 // accent rail down the left edge
 #place(left + top, rect(width: 0.4cm, height: 100%, fill: accent))
@@ -105,7 +118,7 @@ $endif$
         align(top + left,
           box(width: text-width, text(.._font(base-font), size: subtitle-size, weight: "medium", fill: accent, card-subtitle))),
       )),
-      if card-image != none { avatar(card-image, avatar-size) },
+      if card-image != none { avatar(card-image, avatar-size, image-shape) },
     ),
   )
 }

@@ -54,6 +54,17 @@ see [More ways to use it](#more-ways-to-use-it).
 
 ## More ways to use it
 
+### Change the image shape
+
+By default the image is shown as a **rectangle** at its natural aspect ratio.
+Set `image-shape` to `round` (circle crop) or `rounded` (rounded corners),
+mirroring Quarto's `about` template:
+
+```yaml
+image: profile.jpg
+image-shape: round   # round | rounded | rectangle (default)
+```
+
 ### Override the brand for one card
 
 To give a card different colors or fonts, add a `brand` block to its front
@@ -128,8 +139,8 @@ Consider deleting it, or using a `post-render` script to remove it.
 rasterizes it to a golden PNG in `_tests/expected/`. Each case is a directory
 holding a `card.qmd` plus an optional `_brand.yml` (or a `.no-brand` marker; with
 neither, the project's own `_brand.yml` is used). Cases cover the default, long
-title, long subtitle, both long, missing title / subtitle / image, no brand, and
-a brand with downloaded (Google) fonts.
+title, long subtitle, both long, missing title / subtitle / image, image shapes
+(round, rounded), no brand, and a brand with downloaded (Google) fonts.
 
 ```bash
 ./_tests/render.sh

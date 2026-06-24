@@ -24,9 +24,12 @@ mkdir -p "$EXPECTED"
 # Preserve the project's real _brand.yml and restore it (and clean scratch) on exit.
 had_brand=0
 [ -f _brand.yml ] && { cp _brand.yml _tests/.brand-backup.yml; had_brand=1; }
+# Cases reference `profile.jpg`; the image lives in _examples, so stage it at the
+# render root for the duration.
+cp _examples/profile.jpg profile.jpg
 cleanup() {
   if [ "$had_brand" = 1 ]; then cp _tests/.brand-backup.yml _brand.yml; else rm -f _brand.yml; fi
-  rm -f _tests/.brand-backup.yml _card.qmd _card.typ _card.pdf
+  rm -f _tests/.brand-backup.yml _card.qmd _card.typ _card.pdf profile.jpg
   rm -rf _site .quarto
 }
 trap cleanup EXIT

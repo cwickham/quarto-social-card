@@ -1,7 +1,7 @@
 color:
-  foreground: "#333333"
-  background: "#ffffff"
-  primary: "#2A9D8F"
+  foreground: "#f5f5f5"
+  background: "#1a1a2e"
+  primary: "#fca311"
 
 typography:
   fonts:

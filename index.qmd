@@ -56,6 +56,17 @@ see [More ways to use it](#more-ways-to-use-it).
 
 ## More ways to use it
 
+### Change the image shape
+
+By default the image is shown as a **rectangle** at its natural aspect ratio.
+Set `image-shape` to `round` (circle crop) or `rounded` (rounded corners),
+mirroring Quarto's `about` template:
+
+```yaml
+image: profile.jpg
+image-shape: round   # round | rounded | rectangle (default)
+```
+
 ### Override the brand for one card
 
 To give a card different colors or fonts, add a `brand` block to its front

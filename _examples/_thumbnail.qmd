@@ -2,6 +2,7 @@
 title: "Alicia"
 subtitle: "Data Scientist"
 image: profile.jpg
+image-shape: round # circle crop, matching the about: jolla profile image
 format:
   social-card-typst: default
 ---
