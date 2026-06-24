@@ -27,11 +27,16 @@ format:
 ---
 ```
 
-Render it to a 1200×630 PNG:
+Render it — this leaves a `.typ` next to the PDF:
 
 ```bash
-quarto render _thumbnail.qmd &&
-  quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
+quarto render _thumbnail.qmd
+```
+
+Then rasterize that `.typ` to a 1200×630 PNG:
+
+```bash
+quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
 ```
 
 (The `--font-path` lets the card use brand fonts that `quarto render` downloaded;
@@ -131,12 +136,16 @@ format:
   social-card-typst: default
 ```
 
-Rendering produces both the HTML page and the card (`page.typ` → `page.pdf`);
-rasterize the kept `page.typ` to a PNG, named to match what you reference below:
+Rendering produces both the HTML page and the card (`page.typ` → `page.pdf`):
 
 ```bash
-quarto render page.qmd &&
-  quarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --ppi 144
+quarto render page.qmd
+```
+
+Rasterize the kept `page.typ` to a PNG, named to match what you reference below:
+
+```bash
+quarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --ppi 144
 ```
 
 The card uses that page's `title` / `subtitle` / `image`, and the page **body is
