@@ -13,3 +13,4 @@ _thumbnail.png
 
 /.quarto/
 **/*.quarto_ipynb
+site_libs/
