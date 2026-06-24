@@ -46,11 +46,16 @@ $endif$
 #let avatar-size = 7.5cm
 #let text-width = card-width - pad-x.left - pad-x.right - gutter - avatar-size
 
+// Pass `font` through to text(), but omit the argument entirely when none
+// (brandless or colors-only docs) — Typst's text(font: none) is an error, so we
+// let it fall back to the default font instead.
+#let _font(f) = if f == none { (:) } else { (font: f) }
+
 // ---- fit helpers (decide sizes at full card width, not the grid cell) ------
 #let fit-line-size(body, font: none, width: text-width, size: 72pt, min-size: 16pt, step: 1pt) = {
   let s = size
   let target = width - 0.25cm
-  while s > min-size and measure(text(font: font, weight: "bold", size: s, body)).width > target {
+  while s > min-size and measure(text(.._font(font), weight: "bold", size: s, body)).width > target {
     s -= step
   }
   s
@@ -59,10 +64,10 @@ $endif$
 #let fit-wrap-size(body, font: none, width: text-width, lines: 2, size: 28pt, min-size: 14pt, step: 1pt) = {
   let s = size
   while s > min-size {
-    let h1 = measure(box(text(font: font, size: s)[Ag])).height
-    let h2 = measure(box(text(font: font, size: s)[Ag #linebreak() Ag])).height
+    let h1 = measure(box(text(.._font(font), size: s)[Ag])).height
+    let h2 = measure(box(text(.._font(font), size: s)[Ag #linebreak() Ag])).height
     let budget = h1 + (lines - 1) * (h2 - h1) + 0.5pt
-    let h = measure(box(width: width, text(font: font, weight: "medium", size: s, body))).height
+    let h = measure(box(width: width, text(.._font(font), weight: "medium", size: s, body))).height
     if h <= budget { break }
     s -= step
   }
@@ -95,9 +100,9 @@ $endif$
         rows: (1fr, 1fr),
         row-gutter: gap,
         align(bottom + left,
-          text(font: heading-font, size: title-size, weight: "bold", fill: fg, card-title)),
+          text(.._font(heading-font), size: title-size, weight: "bold", fill: fg, card-title)),
         align(top + left,
-          box(width: text-width, text(font: base-font, size: subtitle-size, weight: "medium", fill: accent, card-subtitle))),
+          box(width: text-width, text(.._font(base-font), size: subtitle-size, weight: "medium", fill: accent, card-subtitle))),
       )),
       if card-image != none { avatar(card-image, avatar-size) },
     ),
