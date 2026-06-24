@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "quarto-social-card",
+    "section": "",
+    "text": "A Quarto Typst format that renders an Open Graph social card (1200×630 PNG) from a document’s metadata — title, subtitle, image — styled with your project’s _brand.yml colors and fonts."
+  },
+  {
+    "objectID": "index.html#usage",
+    "href": "index.html#usage",
+    "title": "quarto-social-card",
+    "section": "Usage",
+    "text": "Usage\nAdd the extension to your project:\nquarto add cwickham/quarto-social-card\nCreate a _thumbnail.qmd with your card’s content. The leading _ keeps it out of the rendered site; colors and fonts come from your _brand.yml:\n---\ntitle: \"Alicia\"\nsubtitle: \"Data Scientist\"\nimage: profile.jpg\nformat:\n  social-card-typst: default\n---\nRender it — this leaves a .typ next to the PDF:\nquarto render _thumbnail.qmd\nThen rasterize that .typ to a 1200×630 PNG:\nquarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144\n(The --font-path lets the card use brand fonts that quarto render downloaded; it’s harmless if your brand uses only system fonts.)\nWire the card into _quarto.yml as your site’s social image. Add image-alt so the card is accessible:\nwebsite:\n  open-graph: true\n  image: thumbnail.png\n  image-alt: \"Alicia, Data Scientist\" # the card's text, for screen readers\nRe-run the two render commands whenever the content or brand changes.\nFor overriding the brand on a single card, or making cards from existing pages, see More ways to use it."
+  },
+  {
+    "objectID": "index.html#more-ways-to-use-it",
+    "href": "index.html#more-ways-to-use-it",
+    "title": "quarto-social-card",
+    "section": "More ways to use it",
+    "text": "More ways to use it\n\nChange the image shape\nBy default the image is shown as a rectangle at its natural aspect ratio. Set image-shape to round (circle crop) or rounded (rounded corners), mirroring Quarto’s about template:\nimage: profile.jpg\nimage-shape: round   # round | rounded | rectangle (default)\n\n\nOverride the brand for one card\nTo give a card different colors or fonts, add a brand block to its front matter. Note that a document-level brand replaces the project _brand.yml rather than extending it, so respecify everything you want — including typography, or the card falls back to Typst’s default font:\n---\ntitle: \"Alicia\"\nsubtitle: \"Data Scientist\"\nimage: profile.jpg\nbrand:\n  color:\n    background: \"#1a1a2e\"\n    foreground: \"#ffffff\"\n    primary: \"#e94560\"\n  typography:\n    base:\n      family: \"Avenir Next\"\n    headings:\n      family: \"Baskerville\"\nformat:\n  social-card-typst: default\n---\n\n\n\n\n\n\nNoteVariable Google fonts need explicit weights\n\n\n\nWhen rendering the card, Typst only loads a variable font’s default (usually light) instance, so bold titles render thin. List the weights you need in the font entry so Quarto fetches real static faces:\ntypography:\n  fonts:\n    - family: Fraunces\n      source: google\n      weight: [400, 700]\n(The HTML site is unaffected — browsers handle variable fonts natively.)\n\n\n\n\nUse a brand’s dark mode\nIf your _brand.yml defines light and dark variants, the card uses the light mode by default — a card is a static image, so it has no automatic dark mode. Set brand-mode: dark in the card’s front matter to render the dark variant:\ntitle: \"Alicia\"\nbrand-mode: dark\nformat:\n  social-card-typst: default\n\n\nAdd a card to an existing page\nInstead of a dedicated _thumbnail.qmd, you can add the format to any page alongside its normal output:\nformat:\n  html: default\n  social-card-typst: default\nRendering produces both the HTML page and the card (page.typ → page.pdf):\nquarto render page.qmd\nRasterize the kept page.typ to a PNG, named to match what you reference below:\nquarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --ppi 144\nThe card uses that page’s title / subtitle / image, and the page body is ignored — only the metadata reaches the card.\nThen point the page’s social image at the generated card. By default, Quarto uses the page’s image: (the card’s avatar) as the og:image, so set it explicitly under open-graph (and twitter-card):\nimage: profile.jpg          # shown on the social card, listings and about template\nopen-graph:\n  image: page-card.png      # the generated card\n  image-alt: \"Alicia, Data Scientist\"  # the card's text, for screen readers\ntwitter-card:\n  image: page-card.png\n  image-alt: \"Alicia, Data Scientist\"  # the card's text, for screen readers\nBe aware that the PDF card, e.g. page.pdf, is published into _site/. Consider deleting it, or using a post-render script to remove it."
+  }
+]
