@@ -100,14 +100,27 @@ format:
   social-card-typst: default
 ```
 
-`quarto render page.qmd` then produces both the HTML page and the card
-(`page.typ` → `page.pdf`); rasterize `page.typ` to PNG just as in step 2. The
-card uses that page's `title` / `subtitle` / `image`, and the page **body is
+`quarto render page.qmd` produces both the HTML page and the card
+(`page.typ` → `page.pdf`); rasterize `page.typ` to PNG as in step 2. The card
+uses that page's `title` / `subtitle` / `image`, and the page **body is
 ignored** — only the metadata reaches the card.
 
-Two caveats: in a website project the card `page.pdf` is written into `_site/`
-alongside the HTML (a stray file you may want to clean up), and you rasterize
-each page individually.
+Then point the page's social image at the generated card. Quarto otherwise uses
+the page's `image:` (the card's avatar) as the `og:image`, so set it explicitly
+under `open-graph` (and `twitter-card`):
+
+```yaml
+image: profile.jpg          # avatar shown on the card
+open-graph:
+  image: page-card.png      # the generated card = the shared preview
+twitter-card:
+  image: page-card.png
+```
+
+Two caveats: in a website project the card `page.pdf` is published into `_site/`
+alongside the HTML — naming it with `output-file` doesn't help, since the `_`
+exclusion applies only to *input* files — and you rasterize each page
+individually. The dedicated `_thumbnail.qmd` approach avoids both.
 
 ## Development
 
