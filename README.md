@@ -31,6 +31,33 @@ format:
 Brand colors and fonts are pulled automatically from `_brand.yml` — you don't
 set them here.
 
+#### Overriding the brand for one card
+
+To give a card different colors or fonts, add a `brand` block to its front
+matter. Note that a document-level `brand` **replaces** the project `_brand.yml`
+rather than extending it, so respecify everything you want — including
+typography, or the card falls back to Typst's default font:
+
+```yaml
+---
+title: "Alicia"
+subtitle: "Data Scientist"
+image: profile.jpg
+brand:
+  color:
+    background: "#1a1a2e"
+    foreground: "#ffffff"
+    primary: "#e94560"
+  typography:
+    base:
+      family: "Avenir Next"
+    headings:
+      family: "Baskerville"
+format:
+  social-card-typst: default
+---
+```
+
 ### 2. Render it to a PNG
 
 The format renders to PDF (and, with `keep-typ`, leaves the `.typ`); a second
