@@ -5,7 +5,8 @@
 # front matter under test) and one of:
 #   _brand.yml   -> render with that brand
 #   .no-brand    -> render with no brand at all
-#   (neither)    -> render with the project's own _brand.yml
+#   (neither)    -> render with _examples/_brand.yml (a stable test brand,
+#                   independent of this doc-site's own _brand.yml)
 #
 # For each case we render card.qmd through the social-card-typst format, then
 # rasterize the kept .typ to _tests/expected/<case>.png — the same two-step
@@ -24,12 +25,14 @@ mkdir -p "$EXPECTED"
 # Preserve the project's real _brand.yml and restore it (and clean scratch) on exit.
 had_brand=0
 [ -f _brand.yml ] && { cp _brand.yml _tests/.brand-backup.yml; had_brand=1; }
-# Cases reference `profile.jpg`; the image lives in _examples, so stage it at the
-# render root for the duration.
+# Cases reference images by bare name; stage the shared fixtures at the render
+# root for the duration (profile.jpg from the example, portrait.jpg for the
+# height-bound case).
 cp _examples/profile.jpg profile.jpg
+cp _tests/portrait.jpg portrait.jpg
 cleanup() {
   if [ "$had_brand" = 1 ]; then cp _tests/.brand-backup.yml _brand.yml; else rm -f _brand.yml; fi
-  rm -f _tests/.brand-backup.yml _card.qmd _card.typ _card.pdf profile.jpg
+  rm -f _tests/.brand-backup.yml _card.qmd _card.typ _card.pdf profile.jpg portrait.jpg
   rm -rf _site .quarto
 }
 trap cleanup EXIT
@@ -42,8 +45,8 @@ for dir in _tests/cases/*/; do
     cp "$dir/_brand.yml" _brand.yml
   elif [ -f "$dir/.no-brand" ]; then
     rm -f _brand.yml
-  elif [ "$had_brand" = 1 ]; then
-    cp _tests/.brand-backup.yml _brand.yml
+  else
+    cp _examples/_brand.yml _brand.yml
   fi
 
   cp "$dir/card.qmd" _card.qmd

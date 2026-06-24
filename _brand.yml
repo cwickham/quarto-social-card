@@ -1,7 +1,7 @@
 color:
   foreground: "#f5f5f5"
   background: "#1a1a2e"
-  primary: "#fca311"
+  primary: "#ec4899" # dark pink; 4.84:1 on the navy background (WCAG AA)
 
 typography:
   fonts:

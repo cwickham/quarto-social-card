@@ -90,7 +90,12 @@ $endif$
 #let avatar(path, size, shape) = {
   if shape == "rectangle" or shape == "rounded" {
     let radius = if shape == "rounded" { 0.4cm } else { 0pt }
-    box(radius: radius, clip: true, image(path, width: size))
+    // fit within a size x size area at natural aspect: constrain the longer
+    // side to `size` so tall (portrait) images can't overflow the card.
+    // (called from the layout's #context, so measure() works here directly)
+    let nat = measure(image(path))
+    let img = if nat.width >= nat.height { image(path, width: size) } else { image(path, height: size) }
+    box(radius: radius, clip: true, img)
   } else {
     box(width: size, height: size, radius: 50%, clip: true,
       image(path, width: size, height: size, fit: "cover"))
