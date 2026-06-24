@@ -13,6 +13,9 @@ typography:
   fonts:
     - family: Fraunces
       source: google
+      # request explicit weights: Typst only gets a variable font's default
+      # (light) instance, so without this the bold title renders thin
+      weight: [400, 700]
     - family: Atkinson Hyperlegible
       source: google
   base:
