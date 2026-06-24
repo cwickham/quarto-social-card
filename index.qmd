@@ -1,26 +1,123 @@
 ---
-title: "Alicia"
-subtitle: "Data Scientist"
-# `profile.jpg` photo by Jan Tinneberg on https://unsplash.com
-image: profile.jpg
-image-alt: "Photo of a door partially open revealing a green landscape"
-about: # https://quarto.org/docs/websites/website-about.html
-  template: jolla
-  links:
-    - icon: github
-      text: Github
-      href: https://github.com
-    - icon: linkedin
-      text: LinkedIn
-      href: https://linkedin.com
+title: "quarto-social-card"
 ---
 
-A little bit about me and my life. 
+A Quarto Typst format that renders an Open Graph social card (1200×630 PNG) from
+a document's metadata — title, subtitle, image — styled with your project's
+`_brand.yml` colors and fonts.
 
-## Education
+![The extension's own social card: "quarto-social-card / Social cards from your Quarto metadata", with an example card alongside](thumbnail.png)
 
-University of XYZ, City \| Location \| Sept 20XX - June 20XX
+## Usage
 
-## Experience
+Add the extension to your project:
 
-Workplace \| Job title \| April 20XX - present
+```bash
+quarto add cwickham/quarto-social-card
+```
+
+Create a `_thumbnail.qmd` with your card's content. The leading `_` keeps it out
+of the rendered site; colors and fonts come from your `_brand.yml`:
+
+```yaml
+---
+title: "Alicia"
+subtitle: "Data Scientist"
+image: profile.jpg
+format:
+  social-card-typst: default
+---
+```
+
+Render it to a 1200×630 PNG:
+
+```bash
+quarto render _thumbnail.qmd
+quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
+```
+
+(The `--font-path` lets the card use brand fonts that `quarto render` downloaded;
+it's harmless if your brand uses only system fonts.)
+
+Wire the card into `_quarto.yml` as your site's social image. Add `image-alt` so
+the card is accessible:
+
+```yaml
+website:
+  open-graph: true
+  image: thumbnail.png
+  image-alt: "Alicia, Data Scientist" # the card's text, for screen readers
+```
+
+Re-run the two render commands whenever the content or brand changes.
+
+For overriding the brand on a single card, or making cards from existing pages,
+see [More ways to use it](#more-ways-to-use-it).
+
+## More ways to use it
+
+### Override the brand for one card
+
+To give a card different colors or fonts, add a `brand` block to its front
+matter. Note that a document-level `brand` **replaces** the project `_brand.yml`
+rather than extending it, so respecify everything you want — including
+typography, or the card falls back to Typst's default font:
+
+```yaml
+---
+title: "Alicia"
+subtitle: "Data Scientist"
+image: profile.jpg
+brand:
+  color:
+    background: "#1a1a2e"
+    foreground: "#ffffff"
+    primary: "#e94560"
+  typography:
+    base:
+      family: "Avenir Next"
+    headings:
+      family: "Baskerville"
+format:
+  social-card-typst: default
+---
+```
+
+### Add a card to an existing page
+
+Instead of a dedicated `_thumbnail.qmd`, you can add the format to any page
+alongside its normal output:
+
+```yaml
+format:
+  html: default
+  social-card-typst: default
+```
+
+Rendering produces both the HTML page and the card (`page.typ` → `page.pdf`);
+rasterize the kept `page.typ` to a PNG, named to match what you reference below:
+
+```bash
+quarto render page.qmd
+quarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --ppi 144
+```
+
+The card uses that page's `title` / `subtitle` / `image`, and the page **body is
+ignored** — only the metadata reaches the card.
+
+Then point the page's social image at the generated card. By default, Quarto uses
+the page's `image:` (the card's avatar) as the `og:image`, so set it explicitly
+under `open-graph` (and `twitter-card`):
+
+```yaml
+image: profile.jpg          # shown on the social card, listings and about template
+open-graph:
+  image: page-card.png      # the generated card
+  image-alt: "Alicia, Data Scientist"  # the card's text, for screen readers
+twitter-card:
+  image: page-card.png
+  image-alt: "Alicia, Data Scientist"  # the card's text, for screen readers
+```
+
+Be aware that the PDF card, e.g. `page.pdf`, is published into `_site/`. Consider
+deleting it, or using a `post-render` script to remove it.

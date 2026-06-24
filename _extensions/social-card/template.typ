@@ -15,7 +15,8 @@ $endfor$
 #let card-title = [$title$]
 #let card-subtitle = [$subtitle$]
 $if(image)$
-#let card-image = "$image$"
+// Pandoc markdown-escapes `_` in the path (e.g. `_examples/x.png` -> `\_examples/x.png`); undo that.
+#let card-image = "$image$".replace("\\_", "_")
 $else$
 #let card-image = none
 $endif$

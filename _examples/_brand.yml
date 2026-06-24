@@ -1,0 +1,15 @@
+color:
+  foreground: "#333333"
+  background: "#ffffff"
+  primary: "#2A9D8F"
+
+typography:
+  fonts:
+    - family: Baskerville
+      source: system
+    - family: Avenir Next
+      source: system
+  base:
+    family: Avenir Next
+  headings:
+    family: Baskerville

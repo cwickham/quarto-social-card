@@ -4,7 +4,7 @@ A Quarto Typst format that renders an Open Graph social card (1200×630 PNG) fro
 a document's metadata — title, subtitle, image — styled with your project's
 `_brand.yml` colors and fonts.
 
-![A social card reading "Alicia, Data Scientist" beside a circular photo, in the project's brand colors](thumbnail.png)
+![The extension's own social card: "quarto-social-card / Social cards from your Quarto metadata", with an example card alongside](thumbnail.png)
 
 ## Usage
 
@@ -38,7 +38,7 @@ quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/font
 it's harmless if your brand uses only system fonts.)
 
 Wire the card into `_quarto.yml` as your site's social image. Add `image-alt` so
-the shared preview is accessible:
+the card is accessible:
 
 ```yaml
 website:
@@ -103,7 +103,7 @@ quarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --pp
 The card uses that page's `title` / `subtitle` / `image`, and the page **body is
 ignored** — only the metadata reaches the card.
 
-Then point the page's social image at the generated card. Quarto otherwise uses
+Then point the page's social image at the generated card. By default, Quarto uses
 the page's `image:` (the card's avatar) as the `og:image`, so set it explicitly
 under `open-graph` (and `twitter-card`):
 
@@ -117,7 +117,7 @@ twitter-card:
   image-alt: "Alicia, Data Scientist"  # the card's text, for screen readers
 ```
 
-Be aware that the card `page.pdf` is published into `_site/`. 
+Be aware that the PDF card, e.g. `page.pdf`, is published into `_site/`. 
 Consider deleting it, or using a `post-render` script to remove it.
 
 ## Development
