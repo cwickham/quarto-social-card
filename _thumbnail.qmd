@@ -13,6 +13,6 @@ extension itself — the avatar is one of the example cards. -->
 To regenerate: 
 
 ```bash
-quarto render _thumbnail.qmd
-quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
+quarto render _thumbnail.qmd &&
+  quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
 ```

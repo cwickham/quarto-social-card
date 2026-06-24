@@ -30,8 +30,8 @@ format:
 Render it to a 1200×630 PNG:
 
 ```bash
-quarto render _thumbnail.qmd
-quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
+quarto render _thumbnail.qmd &&
+  quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
 ```
 
 (The `--font-path` lets the card use brand fonts that `quarto render` downloaded;
@@ -135,8 +135,8 @@ Rendering produces both the HTML page and the card (`page.typ` → `page.pdf`);
 rasterize the kept `page.typ` to a PNG, named to match what you reference below:
 
 ```bash
-quarto render page.qmd
-quarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --ppi 144
+quarto render page.qmd &&
+  quarto typst compile page.typ page-card.png --font-path .quarto/typst/fonts --ppi 144
 ```
 
 The card uses that page's `title` / `subtitle` / `image`, and the page **body is
