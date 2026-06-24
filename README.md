@@ -1,26 +1,62 @@
 # quarto-social-card
 
-Auto-generate Open Graph social cards (1200×630 PNGs) for a Quarto website from
-its own metadata — page front matter, project `_quarto.yml`, and `_brand.yml`
-colors and fonts — using a [Typst](https://typst.app) template.
+A Quarto Typst format that renders an Open Graph social card (1200×630 PNG) from
+a document's metadata — title, subtitle, image — styled with your project's
+`_brand.yml` colors and fonts.
 
 Quarto can emit the `og:image` metadata (`open-graph: true`) but you still have
-to supply the image. This fills that gap: the card is rendered from the title,
-subtitle, image, and brand you already have.
+to supply the image. This makes that image from metadata you already have.
 
-> **Status: prototype.** `social-card.typ` is a working Typst template with
-> hardcoded values. The plan to turn it into a proper Quarto extension is in
-> [`PLAN.md`](PLAN.md). The interface is still under discussion.
+> **Status: working spike.** The format lives in `_extensions/social-card/`.
+> The interface (config keys, field mapping) is still being designed — see
+> [`PLAN.md`](PLAN.md).
 
-## Try the prototype
+## Usage
 
-```bash
-quarto typst compile social-card.typ images/social-card.png --ppi 144
+### 1. Create a card document
+
+Make a `_thumbnail.qmd` (the leading `_` keeps it out of your rendered site) and
+set the card content in its front matter:
+
+```yaml
+---
+title: "Alicia"
+subtitle: "Data Scientist"
+image: profile.jpg
+format:
+  social-card-typst: default
+---
 ```
 
-The sample metadata it stands in for lives in `_quarto.yml` (the `website` key),
-`index.qmd`-style front matter (title / subtitle / image), and `_brand.yml`
-(colors + fonts).
+Brand colors and fonts are pulled automatically from `_brand.yml` — you don't
+set them here.
+
+### 2. Render it to a PNG
+
+The format renders to PDF (and, with `keep-typ`, leaves the `.typ`); a second
+command rasterizes that to PNG:
+
+```bash
+quarto render _thumbnail.qmd
+quarto typst compile _thumbnail.typ thumbnail.png --ppi 144
+```
+
+You now have `thumbnail.png`, a 1200×630 social card.
+
+### 3. Wire it up as your site's social image
+
+In `_quarto.yml`, point the `website` key at the card and make sure Open Graph
+is on:
+
+```yaml
+website:
+  open-graph: true
+  image: thumbnail.png   # site-wide default og:image / twitter-card
+```
+
+Individual pages can still override this with their own `image:` front matter.
+Re-run the two commands in step 2 whenever the title, subtitle, image, or brand
+changes.
 
 ## Tests
 

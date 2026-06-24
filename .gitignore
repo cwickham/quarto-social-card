@@ -7,3 +7,6 @@ _site/
 _thumbnail.typ
 _thumbnail.pdf
 _thumbnail.png
+
+/.quarto/
+**/*.quarto_ipynb
