@@ -1,0 +1,1 @@
+Sitemap: https://cwickham.github.io/quarto-social-card/sitemap.xml
