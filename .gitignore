@@ -3,3 +3,7 @@
 _site/
 # transient render artifacts from _tests/render.sh
 .case-*.typ
+# build artifacts from the _thumbnail.qmd spike
+_thumbnail.typ
+_thumbnail.pdf
+_thumbnail.png

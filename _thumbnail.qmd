@@ -1,0 +1,7 @@
+---
+title: "Alicia"
+subtitle: "Data Scientist"
+image: profile.jpg
+format:
+  social-card-typst: default
+---
