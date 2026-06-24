@@ -19,8 +19,6 @@ website:
 format:
   html:
     syntax-highlighting: a11y # light/dark accessible code highlighting
-    axe:
-      output: document
     theme:
       light: brand
       dark:
