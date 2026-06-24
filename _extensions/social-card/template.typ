@@ -115,15 +115,14 @@ $endif$
       rows: 100%,
       align: horizon,
       gutter: gutter,
-      block(width: 100%, height: 100%, grid(
-        rows: (1fr, 1fr),
-        row-gutter: gap,
-        align(bottom + left,
-          text(.._font(heading-font), size: title-size, weight: "bold", fill: fg, card-title)),
-        align(top + left,
-          box(width: text-width, text(.._font(base-font), size: subtitle-size, weight: "medium", fill: accent, card-subtitle))),
-      )),
-      if card-image != none { avatar(card-image, avatar-size, image-shape) },
+      // left: title + subtitle, vertically centred as a block (grid horizon)
+      {
+        text(.._font(heading-font), size: title-size, weight: "bold", fill: fg, card-title)
+        v(gap)
+        box(width: text-width, text(.._font(base-font), size: subtitle-size, weight: "medium", fill: accent, card-subtitle))
+      },
+      // right: image, centred in its column
+      if card-image != none { align(center, avatar(card-image, avatar-size, image-shape)) },
     ),
   )
 }
