@@ -1,6 +1,6 @@
 /*-- scss:defaults --*/
 
-// In dark mode the navbar background is the brand's pink primary. Near-white
-// navbar text on it fails WCAG contrast (~3.5:1), so use the brand navy for the
-// navbar foreground (navy on pink is 4.84:1, AA).
+// In dark mode the navbar background is the brand primary; use the brand navy
+// for the navbar foreground so the title and links stay legible (navy on the
+// minty primary is ~11:1).
 $navbar-fg: #1a1a2e;
