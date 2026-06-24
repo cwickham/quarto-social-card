@@ -48,7 +48,6 @@ $endif$
 #let pad-x = (left: 1.6cm, right: 1.4cm)
 #let pad-y = 1.2cm
 #let gutter = 1.4cm
-#let gap = 0.9cm
 #let avatar-size = 7.5cm
 #let text-width = card-width - pad-x.left - pad-x.right - gutter - avatar-size
 
@@ -117,8 +116,12 @@ $endif$
       gutter: gutter,
       // left: title + subtitle, vertically centred as a block (grid horizon)
       {
+        // kill auto paragraph spacing (it defaults to 1.2em of the 72pt title!);
+        // the natural line metrics then give a gap that scales with font size,
+        // plus a small extra v()
+        set par(spacing: 0pt)
         text(.._font(heading-font), size: title-size, weight: "bold", fill: fg, card-title)
-        v(gap)
+        v(subtitle-size * 0.4)
         box(width: text-width, text(.._font(base-font), size: subtitle-size, weight: "medium", fill: accent, card-subtitle))
       },
       // right: image, centred in its column
