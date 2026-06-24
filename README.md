@@ -44,7 +44,7 @@ the shared preview is accessible:
 website:
   open-graph: true
   image: thumbnail.png
-  image-alt: "A social card reading 'Alicia, Data Scientist'"
+  image-alt: "Alicia, Data Scientist" # the card's text, for screen readers
 ```
 
 Re-run the two render commands whenever the content or brand changes.
@@ -103,10 +103,9 @@ under `open-graph` (and `twitter-card`):
 
 ```yaml
 image: profile.jpg          # avatar shown on the card
-image-alt: "Photo of Alicia"
 open-graph:
   image: page-card.png      # the generated card = the shared preview
-  image-alt: "A social card reading 'Alicia, Data Scientist'"
+  image-alt: "Alicia, Data Scientist"  # the card's text, for screen readers
 twitter-card:
   image: page-card.png
 ```
