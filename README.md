@@ -92,6 +92,21 @@ format:
 ---
 ```
 
+> **Variable Google fonts need explicit weights.** When rendering the card,
+> Typst only loads a variable font's *default* (usually light) instance, so bold
+> titles render thin. List the weights you need in the font entry so Quarto
+> fetches real static faces:
+>
+> ```yaml
+> typography:
+>   fonts:
+>     - family: Fraunces
+>       source: google
+>       weight: [400, 700]
+> ```
+>
+> (The HTML site is unaffected — browsers handle variable fonts natively.)
+
 ### Use a brand's dark mode
 
 If your `_brand.yml` defines light and dark variants, the card uses the **light**
