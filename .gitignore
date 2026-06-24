@@ -14,3 +14,5 @@ _thumbnail.png
 /.quarto/
 **/*.quarto_ipynb
 site_libs/
+_probe.typ
+_probe.png
