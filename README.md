@@ -65,10 +65,14 @@ command rasterizes that to PNG:
 
 ```bash
 quarto render _thumbnail.qmd
-quarto typst compile _thumbnail.typ thumbnail.png --ppi 144
+quarto typst compile _thumbnail.typ thumbnail.png --font-path .quarto/typst/fonts --ppi 144
 ```
 
 You now have `thumbnail.png`, a 1200×630 social card.
+
+The `--font-path .quarto/typst/fonts` points at the cache where `quarto render`
+downloads brand fonts (Google/Bunny), so the card uses them. It's harmless if
+your brand uses only system fonts — Typst just falls back as usual.
 
 ### 3. Wire it up as your site's social image
 
