@@ -49,9 +49,10 @@ only when its content or brand changes (it is cached under
 > The filter logs the exact `open-graph` / `twitter-card` block to copy on each
 > render, so you do not have to guess the filename.
 
-Colours and fonts come from your `_brand.yml`. Brand Google fonts are fetched
-automatically on the first render (cached under `.quarto/typst/fonts/`); system
-and local brand fonts are used directly.
+Colours and fonts come from your `_brand.yml` through Quarto's brand API.
+`source: google` brand fonts are fetched on the first render (cached under
+`.quarto/typst/fonts/`); system fonts are used directly. Local (`source: file`)
+and Bunny fonts are not embedded in the card.
 
 ## Options
 

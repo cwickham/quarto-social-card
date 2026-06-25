@@ -51,9 +51,6 @@ local DEFAULTS = {
   ppi = 144,
 }
 
---- Font weights requested from Google Fonts (matches the card's bold/medium use).
-local FONT_WEIGHTS = '400,700'
-
 --- Cache and font directories, relative to the project scratch directory.
 local CACHE_SUBDIR = pandoc.path.join({ '.quarto', 'social-card' })
 local FONT_SUBDIR = pandoc.path.join({ '.quarto', 'typst', 'fonts' })
@@ -111,19 +108,35 @@ local function read_file(path)
   return content
 end
 
+--- Whether a file exists, without reading its contents.
+--- @param path string
+--- @return boolean
+local function file_exists(path)
+  local f = io.open(path, 'rb')
+  if f then
+    f:close()
+    return true
+  end
+  return false
+end
+
+--- Write bytes to a file (binary-safe).
+--- @param path string
+--- @param bytes string
+--- @return boolean Whether the write succeeded
+local function write_file(path, bytes)
+  local f = io.open(path, 'wb')
+  if not f then return false end
+  f:write(bytes)
+  f:close()
+  return true
+end
+
 --- Hash a string to a short hex stem for cache keys.
 --- @param s string
 --- @return string
 local function short_hash(s)
-  if pandoc.utils and pandoc.utils.sha1 then
-    return pandoc.utils.sha1(s):sub(1, 8)
-  end
-  -- djb2 fallback
-  local h = 5381
-  for i = 1, #s do
-    h = (h * 33 + s:byte(i)) % 4294967296
-  end
-  return string.format('%08x', h)
+  return pandoc.utils.sha1(s):sub(1, 8)
 end
 
 --- The brand mode to render, honouring `brand-mode` and falling back to light.
@@ -151,63 +164,108 @@ local function brand_color(mode, name, fallback)
 end
 
 --- Resolve a brand font family to a Typst string literal, or `none`.
---- Records the family for download.
 --- @param mode string
 --- @param name string 'base' or 'headings'
---- @param families table Set of families to download (family -> true)
 --- @return string Typst literal (e.g. '"Fraunces"' or 'none')
-local function brand_font(mode, name, families)
+local function brand_font(mode, name)
   local ok, typography = pcall(quarto.brand.get_typography, mode, name)
   if ok and type(typography) == 'table' and typography.family then
-    families[typography.family] = true
     return '"' .. escape_typst_string(typography.family) .. '"'
   end
   return 'none'
 end
 
---- Download the TrueType faces for the given Google font families into the
---- project font cache, mirroring Quarto's own Typst font download. Best effort:
---- non-Google families (no truetype URLs) are skipped silently.
---- @param families table Set of family names (family -> true)
---- @param font_dir string Absolute font cache directory
+--- Build the Google Fonts weight query for a font, always including the 400 and
+--- 700 faces the card relies on. Accepts a scalar, a list, or an `a..b` range.
+--- @param weight any
+--- @return string Comma-separated weights (e.g. "400,700")
+local function weight_query(weight)
+  local set = { ['400'] = true, ['700'] = true }
+  local function add(w)
+    w = tostring(w):match('^%s*(.-)%s*$')
+    local a, b = w:match('^(%d+)%.%.(%d+)$')
+    if a then
+      set[a], set[b] = true, true
+    elseif w:match('^%d+$') then
+      set[w] = true
+    end
+  end
+  if type(weight) == 'table' then
+    for _, w in ipairs(weight) do add(w) end
+  elseif weight ~= nil then
+    add(weight)
+  end
+  local list = {}
+  for w in pairs(set) do list[#list + 1] = w end
+  table.sort(list, function(x, y) return tonumber(x) < tonumber(y) end)
+  return table.concat(list, ',')
+end
+
+--- Download the TrueType faces of a Google font family at the given weights into
+--- the cache. A per-(family, weights) sentinel skips the network on later
+--- renders (including the negative case of a system font with no Google faces).
+--- @param family string
+--- @param weights string Comma-separated weights
+--- @param cache_dir string Absolute font cache directory
 --- @return nil
-local function download_fonts(families, font_dir)
-  local checked_dir = pandoc.path.join({ font_dir, '.checked' })
+local function download_google(family, weights, cache_dir)
+  local checked_dir = pandoc.path.join({ cache_dir, '.checked' })
   pandoc.system.make_directory(checked_dir, true)
-  for family in pairs(families) do
-    local query = family:gsub(' ', '+')
-    -- A per-family sentinel caches the lookup (positive or negative: a system
-    -- font yields no Google faces) so later renders skip the network entirely.
-    local sentinel = pandoc.path.join({ checked_dir, query })
-    if not read_file(sentinel) then
-      local css_url = 'https://fonts.googleapis.com/css?family=' .. query .. ':' .. FONT_WEIGHTS
-      local ok, _, css = pcall(pandoc.mediabag.fetch, css_url, '.')
-      if ok and css then
-        for line in css:gmatch('[^\n]+') do
-          local src = line:match('^%s*src:%s*(.-);%s*$')
-          if src then
-            for url in src:gmatch("url%(([^)]*)%)%s*format%('truetype'%)") do
-              local rel = url:gsub('^https?://', '')
-              local dest = pandoc.path.join({ font_dir, rel })
-              if not read_file(dest) then
-                local fok, _, bytes = pcall(pandoc.mediabag.fetch, url, '.')
-                if fok and bytes then
-                  pandoc.system.make_directory(pandoc.path.directory(dest), true)
-                  local out = io.open(dest, 'wb')
-                  if out then
-                    out:write(bytes)
-                    out:close()
-                  end
-                end
+  local query = family:gsub(' ', '+')
+  local sentinel = pandoc.path.join({ checked_dir, short_hash(query .. ':' .. weights) })
+  if file_exists(sentinel) then return end
+  local css_url = 'https://fonts.googleapis.com/css?family=' .. query .. ':' .. weights
+  local ok, _, css = pcall(pandoc.mediabag.fetch, css_url, '.')
+  if ok and css then
+    for line in css:gmatch('[^\n]+') do
+      local src = line:match('^%s*src:%s*(.-);%s*$')
+      if src then
+        -- Take the first TrueType/OpenType face of the line, as Quarto does
+        -- (pandoc.ts); ignore the woff/woff2 alternatives Typst cannot use.
+        for url, fmt in src:gmatch("url%(([^)]*)%)%s*format%('([^']*)'%)") do
+          if fmt == 'truetype' or fmt == 'opentype' then
+            local rel = url:gsub('^https?://', '')
+            local dest = pandoc.path.join({ cache_dir, rel })
+            if not file_exists(dest) then
+              local fok, _, bytes = pcall(pandoc.mediabag.fetch, url, '.')
+              if fok and bytes then
+                pandoc.system.make_directory(pandoc.path.directory(dest), true)
+                write_file(dest, bytes)
               end
             end
+            break
           end
         end
       end
-      local mark = io.open(sentinel, 'w')
-      if mark then mark:close() end
     end
   end
+  write_file(sentinel, '')
+end
+
+--- The brand typography elements the card uses.
+local FONT_ELEMENTS = { 'base', 'headings' }
+
+--- Resolve the font directories Typst needs for the card's base and heading
+--- families, using only the `quarto.brand` API. Each family is fetched from
+--- Google at its element weight (always unioned with 400 and 700 so bold titles
+--- never render thin). Families that are not Google fonts (system fonts) yield
+--- no faces and fall back to Typst's own resolution; the per-family sentinel
+--- caches that negative lookup. Local (`source: file`) and Bunny fonts are not
+--- exposed by the brand API, so they are not embedded in the card.
+--- @param mode string Brand mode ('light' or 'dark')
+--- @param cache_dir string Absolute font cache directory
+--- @return table List of `--font-path` directories
+local function resolve_font_paths(mode, cache_dir)
+  local used = false
+  for _, name in ipairs(FONT_ELEMENTS) do
+    local ok, typography = pcall(quarto.brand.get_typography, mode, name)
+    if ok and type(typography) == 'table' and typography.family then
+      download_google(typography.family, weight_query(typography.weight), cache_dir)
+      used = true
+    end
+  end
+  if used then return { cache_dir } end
+  return {}
 end
 
 --- Resolve the card image to a Typst root-relative path (leading `/`), where the
@@ -259,8 +317,8 @@ end
 local function default_stem()
   local input = quarto.doc.input_file
   if not input then return 'social-card' end
-  local name = pandoc.path.filename(input)
-  return (name:match('^(.+)%.[^.]+$') or name) .. '-social-card'
+  local stem = pandoc.path.split_extension(pandoc.path.filename(input))
+  return stem .. '-social-card'
 end
 
 -- ============================================================================
@@ -288,7 +346,6 @@ local function Meta(meta)
       or ''
 
   local mode = resolve_mode(meta, card)
-  local families = {}
   local context = {
     title = title,
     subtitle = subtitle,
@@ -296,8 +353,8 @@ local function Meta(meta)
     foreground = brand_color(mode, 'foreground', '#000000'),
     background = brand_color(mode, 'background', '#ffffff'),
     primary = brand_color(mode, 'primary', '#000000'),
-    ['base-font'] = brand_font(mode, 'base', families),
-    ['heading-font'] = brand_font(mode, 'headings', families),
+    ['base-font'] = brand_font(mode, 'base'),
+    ['heading-font'] = brand_font(mode, 'headings'),
   }
 
   local image, image_abs = resolve_image(option(meta, card, 'image', 'image'))
@@ -317,33 +374,31 @@ local function Meta(meta)
     return nil
   end
 
-  -- Fonts: download brand Google faces (cached, best effort) and point Typst at
-  -- the cache. Pointing at the dir is harmless when a family is a system font
-  -- (no faces downloaded); Typst still resolves system fonts on its own.
-  local font_path = nil
-  if next(families) ~= nil then
-    font_path = project_path(FONT_SUBDIR)
-    download_fonts(families, font_path)
-  end
+  -- Fonts: resolve the brand's font directories (downloading Google faces at the
+  -- declared weights and staging local file fonts), best effort. Pointing Typst
+  -- at these dirs is harmless when a family is a system font; Typst resolves
+  -- system fonts on its own.
+  local font_paths = resolve_font_paths(mode, project_path(FONT_SUBDIR))
 
-  -- Cache key over the rendered source, the image bytes, and the font path.
+  -- Cache key over the rendered source, the image bytes, and the font paths.
   local hash_material = source
   if image_abs then
     hash_material = hash_material .. '|image:' .. (read_file(image_abs) or image_abs)
   end
-  hash_material = hash_material .. '|fonts:' .. tostring(font_path)
+  table.sort(font_paths)
+  hash_material = hash_material .. '|fonts:' .. table.concat(font_paths, ';')
   local cache_stem = short_hash(hash_material)
 
   local cache_dir = project_path(CACHE_SUBDIR)
   pandoc.system.make_directory(cache_dir, true)
   local cached_png = pandoc.path.join({ cache_dir, cache_stem .. '.png' })
 
-  if not read_file(cached_png) then
+  if not file_exists(cached_png) then
     local root = quarto.project.directory or '.'
     local args = { 'compile', '--format', 'png', '--ppi', tostring(DEFAULTS.ppi), '--root', root }
-    if font_path then
+    for _, dir in ipairs(font_paths) do
       args[#args + 1] = '--font-path'
-      args[#args + 1] = font_path
+      args[#args + 1] = dir
     end
     args[#args + 1] = '-'
     args[#args + 1] = cached_png
@@ -366,12 +421,11 @@ local function Meta(meta)
 
   local out_path, ref
   if out_dir then
+    ref = out_dir:gsub('/$', '') .. '/' .. out_name
     if out_dir:sub(1, 1) == '/' then
       out_path = pandoc.path.join({ project_path(out_dir:sub(2)), out_name })
-      ref = out_dir:gsub('/$', '') .. '/' .. out_name
     else
       out_path = pandoc.path.join({ doc_dir, out_dir, out_name })
-      ref = out_dir:gsub('/$', '') .. '/' .. out_name
     end
     pandoc.system.make_directory(pandoc.path.directory(out_path), true)
   else
@@ -389,15 +443,7 @@ local function Meta(meta)
     log_error('Card image was not produced: ' .. cached_png)
     return nil
   end
-  local function write_png(path)
-    local f = io.open(path, 'wb')
-    if not f then return false end
-    f:write(png_bytes)
-    f:close()
-    return true
-  end
-
-  if not write_png(out_path) then
+  if not write_file(out_path, png_bytes) then
     log_error('Could not write card image: ' .. out_path)
     return nil
   end
@@ -411,7 +457,7 @@ local function Meta(meta)
     if rel and rel ~= '' and not rel:match('^%.%.') then
       local published = pandoc.path.join({ out_root, rel })
       pandoc.system.make_directory(pandoc.path.directory(published), true)
-      write_png(published)
+      write_file(published, png_bytes)
     end
   end
 
