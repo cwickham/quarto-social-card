@@ -1,6 +1,6 @@
 ---
 title: "Alicia"
 subtitle: "Data Scientist"
-format:
-  social-card-typst: default
+filters:
+  - social-card
 ---

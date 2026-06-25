@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-# Regenerate the social-card test fixtures by driving the extension.
+#
+# Social Card - Test fixture renderer
+# Regenerate the social-card test fixtures by driving the extension filter.
+#
+# @license MIT
+# @copyright 2026 Charlotte Wickham
+# @author Charlotte Wickham
 #
 # Each case is a directory under _tests/cases/ containing a `card.qmd` (the
 # front matter under test) and one of:
@@ -8,13 +14,13 @@
 #   (neither)    -> render with _examples/_brand.yml (a stable test brand,
 #                   independent of this doc-site's own _brand.yml)
 #
-# For each case we render card.qmd through the social-card-typst format, then
-# rasterize the kept .typ to _tests/expected/<case>.png — the same two-step
-# flow documented in the README.
+# For each case we render card.qmd through the social-card filter; the filter
+# compiles the card to a PNG next to the document, which we collect as the
+# golden image in _tests/expected/<case>.png.
 #
 #   ./_tests/render.sh
 #
-# Note: the downloaded-fonts case needs network access (Quarto fetches the
+# Note: the downloaded-fonts case needs network access (the filter fetches the
 # Google fonts on first render).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -32,8 +38,8 @@ cp _examples/profile.jpg profile.jpg
 cp _tests/portrait.jpg portrait.jpg
 cleanup() {
   if [ "$had_brand" = 1 ]; then cp _tests/.brand-backup.yml _brand.yml; else rm -f _brand.yml; fi
-  rm -f _tests/.brand-backup.yml _card.qmd _card.typ _card.pdf profile.jpg portrait.jpg
-  rm -rf _site .quarto
+  rm -f _tests/.brand-backup.yml _card.qmd _card.html _card-social-card.png profile.jpg portrait.jpg
+  rm -rf _card_files _site .quarto
 }
 trap cleanup EXIT
 
@@ -50,8 +56,8 @@ for dir in _tests/cases/*/; do
   fi
 
   cp "$dir/card.qmd" _card.qmd
+  rm -f _card-social-card.png
   quarto render _card.qmd >/dev/null 2>&1
-  quarto typst compile _card.typ "$EXPECTED/$name.png" \
-    --font-path .quarto/typst/fonts --ppi 144 >/dev/null 2>&1
+  cp _card-social-card.png "$EXPECTED/$name.png"
   echo "rendered $EXPECTED/$name.png"
 done

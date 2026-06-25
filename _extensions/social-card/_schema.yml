@@ -1,0 +1,32 @@
+$schema: https://m.canouil.dev/quarto-wizard/assets/schema/v2/extension-schema.json
+
+options:
+  enabled:
+    type: boolean
+    default: true
+    description: "Generate the social card for this document."
+  title:
+    type: string
+    description: "Card title. Defaults to the document `title`."
+  subtitle:
+    type: string
+    description: "Card subtitle. Defaults to the document `subtitle`, then `description`."
+  image:
+    type: string
+    description: "Card image (avatar). Defaults to the document `image`."
+  image-shape:
+    type: string
+    enum: [rectangle, round, rounded]
+    default: rectangle
+    description: "How the image is displayed: natural rectangle, circle crop, or rounded corners."
+  brand-mode:
+    type: string
+    enum: [light, dark]
+    default: light
+    description: "Which brand variant to render the card in."
+  filename:
+    type: string
+    description: "Output filename stem (without extension). Defaults to `<document>-social-card`."
+  output-dir:
+    type: string
+    description: "Output directory. A leading `/` is the project root; otherwise relative to the document."

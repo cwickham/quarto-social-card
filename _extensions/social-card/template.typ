@@ -1,45 +1,31 @@
-// Full Typst template for the social card (1200x630 Open Graph card).
+// Social Card - Typst Template
+// Self-contained 1200x630 Open Graph card rendered from filter-supplied values.
 //
-// We render a fixed card from metadata, not a document body, so this replaces
-// Quarto's whole Typst template. The one piece we keep is the header-includes
-// loop below: it carries Quarto's brand injection (`brand-color`, brand font
-// `#set`/`#show` rules). Keeping it BEFORE our layout means `brand-color` is
-// already in scope when we use it.
+// @license MIT
+// @copyright 2026 Charlotte Wickham
+// @author Charlotte Wickham
+//
+// The card is rendered from metadata, not a document body. Every brand value
+// (colours and fonts) is supplied by the social-card Lua filter through the
+// Pandoc template variables below, so this `.typ` compiles standalone with the
+// bundled Typst binary -- no Quarto Typst-format scaffolding required.
 
-$for(header-includes)$
-$header-includes$
-
-$endfor$
-
-// ---- metadata (document front matter + brand) ------------------------------
+// ---- values injected by the filter -----------------------------------------
 #let card-title = [$title$]
 #let card-subtitle = [$subtitle$]
 $if(image)$
-// Pandoc markdown-escapes `_` in the path (e.g. `_examples/x.png` -> `\_examples/x.png`); undo that.
-#let card-image = "$image$".replace("\\_", "_")
+#let card-image = "$image$"
 $else$
 #let card-image = none
 $endif$
-$if(image-shape)$
 #let image-shape = "$image-shape$"
-$else$
-#let image-shape = "rectangle"
-$endif$
-$if(brand.typography.base.family)$
-#let base-font = $brand.typography.base.family$
-$else$
-#let base-font = none
-$endif$
-$if(brand.typography.headings.family)$
-#let heading-font = $brand.typography.headings.family$
-$else$
-#let heading-font = none
-$endif$
+#let base-font = $base-font$       // a Typst string literal, or `none`
+#let heading-font = $heading-font$ // a Typst string literal, or `none`
 
-// ---- brand colors (brand-color injected above; safe fallbacks) -------------
-#let fg = brand-color.at("foreground", default: rgb("#000000"))
-#let bg = brand-color.at("background", default: rgb("#ffffff"))
-#let accent = brand-color.at("primary", default: fg)
+// ---- brand colours (hex strings injected by the filter) --------------------
+#let fg = rgb("$foreground$")
+#let bg = rgb("$background$")
+#let accent = rgb("$primary$")
 
 // ---- geometry --------------------------------------------------------------
 #let ppi = 144
@@ -52,7 +38,7 @@ $endif$
 #let text-width = card-width - pad-x.left - pad-x.right - gutter - avatar-size
 
 // Pass `font` through to text(), but omit the argument entirely when none
-// (brandless or colors-only docs) — Typst's text(font: none) is an error, so we
+// (brandless or colors-only docs) -- Typst's text(font: none) is an error, so we
 // let it fall back to the default font instead.
 #let _font(f) = if f == none { (:) } else { (font: f) }
 

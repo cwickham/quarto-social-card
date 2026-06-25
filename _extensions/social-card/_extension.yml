@@ -1,9 +1,8 @@
 title: Social Card
 author: Charlotte Wickham
 version: 0.0.1
-quarto-required: ">=1.4.0"
+quarto-required: ">=1.6.0"
 contributes:
-  formats:
-    typst:
-      keep-typ: true
-      template: template.typ
+  filters:
+    - at: pre-ast
+      path: social-card.lua

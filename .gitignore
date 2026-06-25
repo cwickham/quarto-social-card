@@ -1,18 +1,20 @@
 .DS_Store
 .quarto/
+/.quarto/
 _site/
+site_libs/
+**/*.quarto_ipynb
+/.luarc.json
+
 # transient render artifacts from _tests/render.sh
 _card.qmd
-_card.typ
-_card.pdf
+_card.html
+_card-social-card.png
 _tests/.brand-backup.yml
-# build artifacts from the _thumbnail.qmd spike
-_thumbnail.typ
-_thumbnail.pdf
-_thumbnail.png
 
-/.quarto/
-**/*.quarto_ipynb
-site_libs/
-_probe.typ
-_probe.png
+# generated social cards (the test goldens under _tests/expected/ are committed)
+thumbnail.png
+*-social-card.png
+
+# transient extension copy staged by _examples/_pre-render.sh
+_examples/_extensions/
