@@ -4,6 +4,17 @@ subtitle: "Data Scientist"
 # `profile.jpg` photo by Jan Tinneberg on https://unsplash.com
 image: profile.jpg
 image-alt: "Photo of a door partially open revealing a green landscape"
+filters:
+  - social-card
+extensions:
+  social-card:
+    image-shape: round # circle crop, matching the about: jolla profile image
+open-graph:
+  image: index-social-card.png
+  image-alt: "Alicia, Data Scientist" # the card's text, for screen readers
+twitter-card:
+  image: index-social-card.png
+  image-alt: "Alicia, Data Scientist"
 about: # https://quarto.org/docs/websites/website-about.html
   template: jolla
   links:

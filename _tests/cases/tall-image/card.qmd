@@ -2,6 +2,6 @@
 title: "Tall Image"
 subtitle: "Portrait photo, default rectangle"
 image: portrait.jpg
-format:
-  social-card-typst: default
+filters:
+  - social-card
 ---

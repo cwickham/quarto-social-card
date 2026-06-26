@@ -1,6 +1,6 @@
 ---
 title: "Alicia"
 image: profile.jpg
-format:
-  social-card-typst: default
+filters:
+  - social-card
 ---
