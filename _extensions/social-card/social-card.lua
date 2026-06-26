@@ -242,6 +242,26 @@ local function download_google(family, weights, cache_dir)
   write_file(sentinel, '')
 end
 
+--- Lowercased set of font families Typst can already resolve (system fonts),
+--- cached for the process. Lets us skip a Google lookup for a family that is
+--- already installed.
+local system_families = nil
+
+--- @param bin string Typst binary path
+--- @return table Set of lowercased family names
+local function available_families(bin)
+  if system_families then return system_families end
+  system_families = {}
+  local ok, out = pcall(pandoc.pipe, bin, { 'fonts' }, '')
+  if ok and type(out) == 'string' then
+    for line in out:gmatch('[^\n]+') do
+      local family = line:match('^%s*(.-)%s*$')
+      if family ~= '' then system_families[family:lower()] = true end
+    end
+  end
+  return system_families
+end
+
 --- The brand typography elements the card uses.
 local FONT_ELEMENTS = { 'base', 'headings' }
 
@@ -254,14 +274,19 @@ local FONT_ELEMENTS = { 'base', 'headings' }
 --- exposed by the brand API, so they are not embedded in the card.
 --- @param mode string Brand mode ('light' or 'dark')
 --- @param cache_dir string Absolute font cache directory
+--- @param bin string Typst binary path
 --- @return table List of `--font-path` directories
-local function resolve_font_paths(mode, cache_dir)
+local function resolve_font_paths(mode, cache_dir, bin)
+  local system = available_families(bin)
   local used = false
   for _, name in ipairs(FONT_ELEMENTS) do
     local ok, typography = pcall(quarto.brand.get_typography, mode, name)
     if ok and type(typography) == 'table' and typography.family then
-      download_google(typography.family, weight_query(typography.weight), cache_dir)
-      used = true
+      -- Only reach for Google when the family is not already installed.
+      if not system[typography.family:lower()] then
+        download_google(typography.family, weight_query(typography.weight), cache_dir)
+        used = true
+      end
     end
   end
   if used then return { cache_dir } end
@@ -378,7 +403,7 @@ local function Meta(meta)
   -- declared weights and staging local file fonts), best effort. Pointing Typst
   -- at these dirs is harmless when a family is a system font; Typst resolves
   -- system fonts on its own.
-  local font_paths = resolve_font_paths(mode, project_path(FONT_SUBDIR))
+  local font_paths = resolve_font_paths(mode, project_path(FONT_SUBDIR), bin)
 
   -- Cache key over the rendered source, the image bytes, and the font paths.
   local hash_material = source
